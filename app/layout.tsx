@@ -9,6 +9,15 @@ export const metadata: Metadata = {
   title: 'Sponsor a Child | UBORA Tanzania Foundation',
   description:
     'Through child sponsorship, you share the hope of the gospel with a child in need. Browse children waiting for a sponsor.',
+  icons: {
+    icon: [
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
