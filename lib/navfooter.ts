@@ -10,6 +10,17 @@ const ORIGIN = (process.env.WEBFLOW_SITE_ORIGIN || 'https://uboratz.org').replac
 const TTL = Number(process.env.NAVFOOTER_TTL || 3600);
 export const NAVFOOTER_TAG = 'navfooter';
 
+/** fetch() with an abort timeout so a slow/hanging Webflow origin can't block the render. */
+async function fetchT(url: string, init: RequestInit = {}, ms = 6000): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...init, signal: ctrl.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** Scope one block of CSS so Webflow's global styles only touch our .wf-scope wrappers (Naum step 4). */
 async function scopeCss(css: string): Promise<string> {
   if (!css.trim()) return '';
@@ -35,7 +46,7 @@ async function scopeCss(css: string): Promise<string> {
 async function buildNavFooter(): Promise<NavFooter> {
   const empty: NavFooter = { ok: false, navHtml: '', footerHtml: '', css: '' };
   try {
-    const res = await fetch(SOURCE, { cache: 'no-store', headers: { 'User-Agent': 'UBORA-Sponsor/1.0' } });
+    const res = await fetchT(SOURCE, { cache: 'no-store', headers: { 'User-Agent': 'UBORA-Sponsor/1.0' } });
     if (!res.ok) return empty;
     const html = await res.text();
     const $ = cheerio.load(html);
@@ -67,7 +78,7 @@ async function buildNavFooter(): Promise<NavFooter> {
       .map((h) => (h!.startsWith('//') ? 'https:' + h : h!.startsWith('/') ? ORIGIN + h! : h!));
     for (const href of links) {
       try {
-        const r = await fetch(href, { cache: 'no-store' });
+        const r = await fetchT(href, { cache: 'no-store' }, 5000);
         if (r.ok) cssParts.push(await r.text());
       } catch {
         /* ignore a single stylesheet failure */

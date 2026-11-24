@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Child } from '@/lib/children';
+import { childSlug } from '@/lib/children';
 import { openGiving } from './giving';
 
 const PAGE = 6;
@@ -20,11 +21,14 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
   const [shown, setShown] = useState(PAGE);
 
   useEffect(() => {
-    const url = feedUrl + (feedUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } })
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
+    fetch(feedUrl, { signal: ctrl.signal, headers: { Accept: 'application/json' } })
       .then((r) => (r.ok ? r.json() : []))
       .then((d) => setKids(Array.isArray(d) ? d : []))
-      .catch(() => setKids([]));
+      .catch(() => setKids([]))
+      .finally(() => clearTimeout(timer));
+    return () => { clearTimeout(timer); ctrl.abort(); };
   }, [feedUrl]);
 
   const allHobbies = useMemo(() => {
@@ -95,7 +99,7 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
         <>
           <div className="kids-grid">
             {filtered.slice(0, shown).map((c) => (
-              <Link key={c.id} className="kid-card" href={`/children/${encodeURIComponent(c.id)}`}>
+              <Link key={c.id} className="kid-card" href={`/children/${childSlug(c)}`}>
                 {c.photo800 ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img className="ph" src={c.photo800} alt={c.name} loading="lazy" />

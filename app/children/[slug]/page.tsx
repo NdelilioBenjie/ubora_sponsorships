@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { Child } from '@/lib/children';
+import { childSlug } from '@/lib/children';
 import { openGiving } from '@/components/giving';
 
-const FEED = process.env.NEXT_PUBLIC_CHILDREN_FEED || 'https://uborahomevisit.co.tz/sponsor-feed/children';
+const FEED = '/api/children';
 const initials = (n: string) => {
   const p = (n || '').trim().split(/\s+/);
   return ((p[0]?.[0] || '') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
@@ -14,14 +15,22 @@ export default function ChildProfile({ params }: { params: { slug: string } }) {
   const [state, setState] = useState<{ loading: boolean; child: Child | null }>({ loading: true, child: null });
 
   useEffect(() => {
-    const url = FEED + (FEED.includes('?') ? '&' : '?') + 't=' + Date.now();
-    fetch(url, { cache: 'no-store', headers: { Accept: 'application/json' } })
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 12000);
+    fetch(FEED, { signal: ctrl.signal, headers: { Accept: 'application/json' } })
       .then((r) => (r.ok ? r.json() : []))
       .then((list: Child[]) => {
-        const id = decodeURIComponent(params.slug);
-        setState({ loading: false, child: (Array.isArray(list) ? list : []).find((c) => c.id === id) || null });
+        const slug = decodeURIComponent(params.slug);
+        const all = Array.isArray(list) ? list : [];
+        const child =
+          all.find((c) => childSlug(c) === slug) ||
+          all.find((c) => String(c.id) === slug) || // backwards-compatible with old id-only links
+          null;
+        setState({ loading: false, child });
       })
-      .catch(() => setState({ loading: false, child: null }));
+      .catch(() => setState({ loading: false, child: null }))
+      .finally(() => clearTimeout(timer));
+    return () => { clearTimeout(timer); ctrl.abort(); };
   }, [params.slug]);
 
   if (state.loading) return <div className="wrap sec"><p>Loading&hellip;</p></div>;
@@ -34,6 +43,7 @@ export default function ChildProfile({ params }: { params: { slug: string } }) {
     );
 
   const first = c.name.split(' ')[0];
+  const kacs = c.kacsNumber ?? c.kacs_number ?? c.kacs ?? c.id;
   return (
     <div className="wrap sec">
       <Link className="back-link" href="/">&larr; Back to all children</Link>
@@ -55,7 +65,7 @@ export default function ChildProfile({ params }: { params: { slug: string } }) {
           </div>
           <div className="pf-cta">
             <button className="btn btn-yellow" onClick={() => openGiving(c)}>Sponsor {first} &rarr;</button>
-            <span className="pf-ref">Child ID: {String(c.id).toUpperCase()}</span>
+            <span className="pf-ref">Child ID: {String(kacs).toUpperCase()}</span>
           </div>
         </div>
       </div>
