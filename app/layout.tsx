@@ -3,6 +3,7 @@ import './globals.css';
 import { getNavFooter } from '@/lib/navfooter';
 import NavFooterScripts from '@/components/NavFooterScripts';
 import GivingModal from '@/components/GivingModal';
+import NewsletterEmbed from '@/components/NewsletterEmbed';
 
 export const metadata: Metadata = {
   title: 'Sponsor a Child | UBORA Tanzania Foundation',
@@ -38,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         )}
 
         <NavFooterScripts />
+        <NewsletterEmbed />
         <GivingModal />
       </body>
     </html>

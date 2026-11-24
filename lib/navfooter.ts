@@ -95,7 +95,7 @@ async function buildNavFooter(): Promise<NavFooter> {
     // (7) the footer newsletter form is Cloudflare-Turnstile protected and only works on uboratz.org
     footer.find('form').each((_, el) => {
       $(el).replaceWith(
-        `<a class="wf-newsletter-link" href="${ORIGIN}/#newsletter" target="_blank" rel="noopener">Subscribe to our newsletter →</a>`
+        `<a class="wf-newsletter-link" href="${ORIGIN}/#global-footer" target="_blank" rel="noopener">Subscribe to our newsletter →</a>`
       );
     });
 

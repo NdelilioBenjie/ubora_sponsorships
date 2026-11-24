@@ -1,14 +1,17 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import type { Child } from '@/lib/children';
+import { kacsOf } from '@/lib/children';
 
+// Exact Virtuous embed used on every child's sponsor action. Hardcoded defaults
+// so it works even where env vars aren't set; env vars can still override.
 const V = {
   src: process.env.NEXT_PUBLIC_VIRTUOUS_SRC || 'https://cdn.virtuoussoftware.com/virtuous.embed.min.js',
-  vform: process.env.NEXT_PUBLIC_VIRTUOUS_VFORM || '',
-  orgId: process.env.NEXT_PUBLIC_VIRTUOUS_ORGID || '',
+  vform: process.env.NEXT_PUBLIC_VIRTUOUS_VFORM || '727c0e0a-c6ea-4fb1-bca2-5e4744a6248d',
+  orgId: process.env.NEXT_PUBLIC_VIRTUOUS_ORGID || '7019',
   isGiving: process.env.NEXT_PUBLIC_VIRTUOUS_ISGIVING || 'true',
   merchantType: process.env.NEXT_PUBLIC_VIRTUOUS_MERCHANTTYPE || 'StripeUnified',
-  dependencies: process.env.NEXT_PUBLIC_VIRTUOUS_DEPENDENCIES || '[0]',
+  dependencies: process.env.NEXT_PUBLIC_VIRTUOUS_DEPENDENCIES || '',
 };
 
 export default function GivingModal() {
@@ -42,7 +45,7 @@ export default function GivingModal() {
       s.setAttribute('data-orgId', V.orgId);
       s.setAttribute('data-isGiving', V.isGiving);
       s.setAttribute('data-merchantType', V.merchantType);
-      s.setAttribute('data-dependencies', V.dependencies);
+      if (V.dependencies) s.setAttribute('data-dependencies', V.dependencies);
       s.addEventListener('load', () => {
         const l = formHost.current?.parentElement?.querySelector('.ug-loading') as HTMLElement | null;
         if (l) l.style.display = 'none';
@@ -53,7 +56,7 @@ export default function GivingModal() {
 
   if (!open) return null;
   const sub = child
-    ? `You’re setting up a sponsorship for ${child.name} · Reference ${String(child.id).toUpperCase()}`
+    ? `You’re setting up a sponsorship for ${child.name} · Reference ${String(kacsOf(child)).toUpperCase()}`
     : 'Thank you for supporting UBORA Tanzania.';
 
   return (
