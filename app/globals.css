@@ -28,8 +28,7 @@ img{max-width:100%;display:block}
 
 /* ---- grid page ---- */
 .hero-spon{text-align:center;padding-block:clamp(30px,5vw,56px) 10px}
-.hero-spon h1{color:#111}
-.hero-spon h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:900;color:var(--forest-dark);margin:0 0 8px}
+.hero-spon h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:900;color:#111;margin:0 0 8px}
 .hero-spon p{color:var(--mute);max-width:620px;margin:0 auto}
 .filters{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px 20px;box-shadow:0 20px 50px -34px rgba(15,42,25,.5);display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;margin-block:22px}
 .fgroup{display:flex;flex-direction:column;gap:8px}
