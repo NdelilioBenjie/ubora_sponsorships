@@ -24,6 +24,15 @@ export type Child = {
 export const FEED_URL =
   process.env.NEXT_PUBLIC_CHILDREN_FEED || 'https://uborahomevisit.co.tz/sponsor-feed/children';
 
+/**
+ * Route a (slow Hub) image through Netlify's Image CDN: resized to the size we
+ * actually display and cached at the edge, so the slow origin is hit once, not per view.
+ */
+export function cdnImg(src: string | null | undefined, w = 800): string {
+  if (!src) return '';
+  return `/.netlify/images?url=${encodeURIComponent(src)}&w=${w}&q=70`;
+}
+
 /** The child's public reference — KACS number from the internal app, or the id as fallback. */
 export function kacsOf(c: Child): string {
   return String(c.kacsNumber ?? c.kacs_number ?? c.kacs ?? c.id ?? '');

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { Child } from '@/lib/children';
-import { childSlug } from '@/lib/children';
+import { childSlug, cdnImg } from '@/lib/children';
 import { openGiving } from '@/components/giving';
 
 const FEED = '/api/children';
@@ -50,7 +50,7 @@ export default function ChildProfile({ params }: { params: { slug: string } }) {
       <div className="pf-hero">
         {c.photo1600 || c.photo800 ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="pf-photo" src={c.photo1600 || c.photo800 || ''} alt={c.name} />
+          <img className="pf-photo" src={cdnImg(c.photo1600 || c.photo800, 1200)} alt={c.name} decoding="async" />
         ) : (
           <div className="pf-init">{initials(c.name)}</div>
         )}

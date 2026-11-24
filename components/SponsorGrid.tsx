@@ -2,8 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { Child } from '@/lib/children';
-import { childSlug } from '@/lib/children';
-import { openGiving } from './giving';
+import { childSlug, cdnImg } from '@/lib/children';
 
 const PAGE = 6;
 const initials = (n: string) => {
@@ -89,10 +88,10 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
         <>
           <div className="kids-grid">
             {filtered.slice(0, shown).map((c) => (
-              <Link key={c.id} className="kid-card" href={`/children/${childSlug(c)}`}>
+              <Link key={c.id} className="kid-card" href={`/children/${childSlug(c)}`} prefetch={false}>
                 {c.photo800 ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img className="ph" src={c.photo800} alt={c.name} loading="lazy" />
+                  <img className="ph" src={cdnImg(c.photo800, 800)} alt={c.name} loading="lazy" decoding="async" />
                 ) : (
                   <div className="ph ph-init">{initials(c.name)}</div>
                 )}
@@ -105,9 +104,11 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
           </div>
           <div className="grid-cta">
             {shown < filtered.length && (
-              <button className="btn btn-outline-blue" onClick={() => setShown((s) => s + PAGE)}>View More</button>
+              <button className="btn btn-yellow btn-view" onClick={() => setShown((s) => s + PAGE)}>View More</button>
             )}
-            <button className="btn btn-yellow" onClick={() => openGiving(null)}>Sponsor a Child</button>
+            {shown > PAGE && (
+              <button className="btn btn-yellow btn-view" onClick={() => setShown(PAGE)}>View Less</button>
+            )}
           </div>
         </>
       )}

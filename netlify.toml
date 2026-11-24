@@ -4,3 +4,8 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Allow Netlify's Image CDN to fetch, resize and edge-cache the child photos
+# served by the (slow) Hub, so visitors don't hit that origin for full-size images.
+[images]
+  remote_images = ["https://uborahomevisit.co.tz/.*"]

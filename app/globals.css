@@ -23,6 +23,8 @@ img{max-width:100%;display:block}
 .btn{display:inline-flex;align-items:center;gap:8px;border:0;cursor:pointer;font-weight:800;text-decoration:none;border-radius:999px;padding:13px 24px;font-size:.98rem;transition:transform .15s,box-shadow .15s}
 .btn:hover{transform:translateY(-1px)}
 .btn-yellow{background:#FCD116;color:#0054E8;box-shadow:0 12px 24px -12px rgba(252,209,22,.6)}
+.btn-view{transition:background .15s ease,color .15s ease,transform .15s ease}
+.btn-view:hover{background:#0054E8;color:#fff}
 .btn-outline-blue{background:#fff;color:var(--blue);border:2px solid var(--blue)}
 .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
 
