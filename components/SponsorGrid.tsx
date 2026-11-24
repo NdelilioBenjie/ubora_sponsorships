@@ -13,7 +13,6 @@ const initials = (n: string) => {
 
 export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
   const [kids, setKids] = useState<Child[] | null>(null);
-  const [gender, setGender] = useState('');
   const [q, setQ] = useState('');
   const [ageMin, setAgeMin] = useState(1);
   const [ageMax, setAgeMax] = useState(18);
@@ -39,7 +38,6 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
 
   const filtered = useMemo(() => {
     return (kids || []).filter((c) => {
-      if (gender && (c.gender || '') !== gender) return false;
       if (c.age != null && (c.age < ageMin || c.age > ageMax)) return false;
       if (hobbies.length && !hobbies.every((h) => (c.hobbies || []).includes(h))) return false;
       if (q) {
@@ -48,25 +46,17 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
       }
       return true;
     });
-  }, [kids, gender, ageMin, ageMax, hobbies, q]);
+  }, [kids, ageMin, ageMax, hobbies, q]);
 
   const toggleHobby = (h: string) =>
     setHobbies((hs) => (hs.includes(h) ? hs.filter((x) => x !== h) : [...hs, h]));
-  const reset = () => { setGender(''); setQ(''); setAgeMin(1); setAgeMax(18); setHobbies([]); setShown(PAGE); };
+  const reset = () => { setQ(''); setAgeMin(1); setAgeMax(18); setHobbies([]); setShown(PAGE); };
 
   if (kids === null) return <p className="kid-count">Loading children&hellip;</p>;
 
   return (
     <>
       <div className="filters">
-        <div className="fgroup">
-          <span>Gender</span>
-          <div className="fb-pills">
-            {[['', 'Either'], ['Boy', 'Boy'], ['Girl', 'Girl']].map(([v, l]) => (
-              <button key={l} className={`fb-pill ${gender === v ? 'on' : ''}`} onClick={() => setGender(v)}>{l}</button>
-            ))}
-          </div>
-        </div>
         <div className="fgroup">
           <span>Age {ageMin}&ndash;{ageMax}</span>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
