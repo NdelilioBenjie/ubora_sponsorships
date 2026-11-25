@@ -4,7 +4,6 @@ import Link from 'next/link';
 import type { Child } from '@/lib/children';
 import { childSlug, cdnImg } from '@/lib/children';
 
-const PAGE = 6;
 const initials = (n: string) => {
   const p = (n || '').trim().split(/\s+/);
   return ((p[0]?.[0] || '') + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
@@ -16,7 +15,6 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
   const [ageMin, setAgeMin] = useState(1);
   const [ageMax, setAgeMax] = useState(18);
   const [hobbies, setHobbies] = useState<string[]>([]);
-  const [shown, setShown] = useState(PAGE);
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -49,7 +47,7 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
 
   const toggleHobby = (h: string) =>
     setHobbies((hs) => (hs.includes(h) ? hs.filter((x) => x !== h) : [...hs, h]));
-  const reset = () => { setQ(''); setAgeMin(1); setAgeMax(18); setHobbies([]); setShown(PAGE); };
+  const reset = () => { setQ(''); setAgeMin(1); setAgeMax(18); setHobbies([]); };
 
   if (kids === null) return <p className="kid-count">Loading children&hellip;</p>;
 
@@ -85,32 +83,22 @@ export default function SponsorGrid({ feedUrl }: { feedUrl: string }) {
       {filtered.length === 0 ? (
         <p className="empty-note">No children match these filters right now — try widening your search, or check back soon.</p>
       ) : (
-        <>
-          <div className="kids-grid">
-            {filtered.slice(0, shown).map((c) => (
-              <Link key={c.id} className="kid-card" href={`/children/${childSlug(c)}`} prefetch={false}>
-                {c.photo800 ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img className="ph" src={cdnImg(c.photo800, 800)} alt={c.name} loading="lazy" decoding="async" />
-                ) : (
-                  <div className="ph ph-init">{initials(c.name)}</div>
-                )}
-                <div className="kid-card-info">
-                  <h3>{c.name}</h3>
-                  <span className="kid-card-date">{c.age != null ? `Age ${c.age} · ` : ''}{c.grade}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div className="grid-cta">
-            {shown < filtered.length && (
-              <button className="btn btn-yellow btn-view" onClick={() => setShown((s) => s + PAGE)}>View More</button>
-            )}
-            {shown > PAGE && (
-              <button className="btn btn-yellow btn-view" onClick={() => setShown(PAGE)}>View Less</button>
-            )}
-          </div>
-        </>
+        <div className="kids-grid">
+          {filtered.map((c) => (
+            <Link key={c.id} className="kid-card" href={`/children/${childSlug(c)}`} prefetch={false}>
+              {c.photo800 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="ph" src={cdnImg(c.photo800, 800)} alt={c.name} loading="lazy" decoding="async" />
+              ) : (
+                <div className="ph ph-init">{initials(c.name)}</div>
+              )}
+              <div className="kid-card-info">
+                <h3>{c.name}</h3>
+                <span className="kid-card-date">{c.age != null ? `Age ${c.age} · ` : ''}{c.grade}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
       )}
     </>
   );
